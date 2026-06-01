@@ -11,6 +11,7 @@ Test rst_utils module.
 from __future__ import annotations
 
 import pytest
+from docutils import __version__ as docutils_version_string
 from docutils import nodes
 from docutils.parsers.rst import Directive
 
@@ -22,6 +23,10 @@ from antsibull_docutils.rst_code_finder import (
     _find_offset,
     find_code_blocks,
     mark_antsibull_code_block,
+)
+
+DOCUTILS_VERSION = tuple(
+    int(part) for part in docutils_version_string.split(".", 2)[:2]
 )
 
 FIND_CODE_BLOCKS: list[tuple[str, list[CodeBlockInfo]]] = [
@@ -187,23 +192,47 @@ Test
                 content="template<typename T>\nstd::vector<T> create()\n{ return {}; }\n",
                 attributes={},
             ),
-            CodeBlockInfo(
-                language="foo",
-                row_offset=23,
-                col_offset=0,
-                position_exact=False,
-                directly_replacable_in_content=False,
-                content="foo\n\n  !bar\n",
-                attributes={},
+            (
+                CodeBlockInfo(
+                    language="foo",
+                    row_offset=22,
+                    col_offset=4,
+                    position_exact=True,
+                    directly_replacable_in_content=False,
+                    content="foo\n\n  !bar\n",
+                    attributes={},
+                )
+                if DOCUTILS_VERSION >= (0, 23)
+                else CodeBlockInfo(
+                    language="foo",
+                    row_offset=23,
+                    col_offset=0,
+                    position_exact=False,
+                    directly_replacable_in_content=False,
+                    content="foo\n\n  !bar\n",
+                    attributes={},
+                )
             ),
-            CodeBlockInfo(
-                language="bar",
-                row_offset=24,
-                col_offset=0,
-                position_exact=False,
-                directly_replacable_in_content=False,
-                content="foo\n\n  !bar\n",
-                attributes={},
+            (
+                CodeBlockInfo(
+                    language="bar",
+                    row_offset=23,
+                    col_offset=0,
+                    position_exact=False,
+                    directly_replacable_in_content=False,
+                    content="foo\n\n  !bar\n",
+                    attributes={},
+                )
+                if DOCUTILS_VERSION >= (0, 23)
+                else CodeBlockInfo(
+                    language="bar",
+                    row_offset=24,
+                    col_offset=0,
+                    position_exact=False,
+                    directly_replacable_in_content=False,
+                    content="foo\n\n  !bar\n",
+                    attributes={},
+                )
             ),
             CodeBlockInfo(
                 language=None,
@@ -223,14 +252,26 @@ Test
                 content="Another test\n",
                 attributes={},
             ),
-            CodeBlockInfo(
-                language=None,
-                row_offset=49,
-                col_offset=7,
-                position_exact=True,
-                directly_replacable_in_content=False,
-                content="foo\nbar 1!\n",
-                attributes={},
+            (
+                CodeBlockInfo(
+                    language=None,
+                    row_offset=48,
+                    col_offset=7,
+                    position_exact=False,
+                    directly_replacable_in_content=False,
+                    content="foo\nbar 1!\n",
+                    attributes={},
+                )
+                if DOCUTILS_VERSION >= (0, 23)
+                else CodeBlockInfo(
+                    language=None,
+                    row_offset=49,
+                    col_offset=7,
+                    position_exact=True,
+                    directly_replacable_in_content=False,
+                    content="foo\nbar 1!\n",
+                    attributes={},
+                )
             ),
             CodeBlockInfo(
                 language=None,

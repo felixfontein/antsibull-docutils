@@ -37,6 +37,13 @@ jobs:
             force-python: ""
             codecov: true
             packages: ""
+            docutils_version: "0.22.4"
+
+          - session: test
+            python-versions: "3.9, 3.10, 3.11, 3.12, 3.13, 3.14"
+            force-python: ""
+            codecov: true
+            packages: ""
             docutils_version: "0.21.2"
 
           - session: test
